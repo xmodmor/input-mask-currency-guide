@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Input Mask &mdash; Currency Formatting Guide</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" rel="stylesheet" id="hljs-theme-dark">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" rel="stylesheet" id="hljs-theme-light" disabled>
+
+  <style>
+    :root {
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .btn-accent {
+      background-color: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .btn-accent:hover {
+      background-color: var(--accent-hover);
+      border-color: var(--accent-hover);
+      color: #fff;
+    }
+
+    .hero-section {
+      padding: 5rem 0 4rem;
+    }
+    .hero-section h1 {
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .hero-section .lead {
+      max-width: 600px;
+    }
+
+    .section-title {
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.25rem;
+    }
+    .section-subtitle {
+      margin-bottom: 2rem;
+    }
+
+    .currency-card {
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .currency-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+    .currency-card .card-header {
+      font-weight: 600;
+    }
+
+    .currency-symbol {
+      font-size: 1.5rem;
+      font-weight: 700;
+      width: 48px;
+      height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      flex-shrink: 0;
+    }
+
+    .raw-value {
+      font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 0.82rem;
+    }
+
+    .code-wrapper {
+      position: relative;
+    }
+    .code-wrapper .btn-copy {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 2;
+      font-size: 0.78rem;
+      padding: 0.2rem 0.5rem;
+    }
+
+    pre code {
+      font-size: 0.85rem;
+      border-radius: 0.5rem;
+    }
+
+    .config-code pre {
+      margin-bottom: 0;
+    }
+
+    .table-ref th {
+      white-space: nowrap;
+    }
+
+    .step-number {
+      width: 36px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    footer a {
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    [data-bs-theme="dark"] .currency-symbol {
+      opacity: 0.9;
+    }
+    [data-bs-theme="dark"] .hero-section h1 {
+      color: #e2e8f0;
+    }
+    [data-bs-theme="dark"] #hljs-theme-dark { }
+
+    @media (max-width: 767.98px) {
+      .hero-section {
+        padding: 3rem 0 2.5rem;
+      }
+      .hero-section h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== NAVBAR ==================== -->
+  <nav class="navbar navbar-expand-lg sticky-top bg-body-tertiary border-bottom">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#">
+        <i class="bi bi-input-cursor-text me-2"></i>Input Mask
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="#setup">Setup</a></li>
+          <li class="nav-item"><a class="nav-link" href="#demos">Demos</a></li>
+          <li class="nav-item"><a class="nav-link" href="#reference">Reference</a></li>
+        </ul>
+        <button class="btn btn-sm btn-outline-secondary" id="themeToggle" type="button" title="Toggle dark/light mode">
+          <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ==================== HERO ==================== -->
+  <section class="hero-section text-center">
+    <div class="container">
+      <span class="badge text-bg-primary mb-3 px-3 py-2 fs-6">Developer Guide</span>
+      <h1 class="display-4 mb-3">Currency Input Mask</h1>
+      <p class="lead text-body-secondary mx-auto">
+        A practical guide to implementing formatted currency inputs using
+        <strong>jQuery Inputmask</strong> &amp; <strong>Bootstrap 5</strong>.
+        Covers USD, EUR, IRR, TRY, GBP, JPY, AED and more.
+      </p>
+      <div class="mt-4 d-flex gap-2 justify-content-center">
+        <a href="#setup" class="btn btn-accent btn-lg px-4">Get Started</a>
+        <a href="#demos" class="btn btn-outline-secondary btn-lg px-4">Live Demos</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SETUP / QUICK START ==================== -->
+  <section id="setup" class="py-5">
+    <div class="container" style="max-width: 860px;">
+      <h2 class="section-title text-center">Quick Start</h2>
+      <p class="text-body-secondary text-center section-subtitle">
+        Three steps to get currency input masks running in your project.
+      </p>
+
+      <!-- Step 1 -->
+      <div class="d-flex gap-3 mb-4">
+        <span class="step-number bg-primary text-white mt-1">1</span>
+        <div class="flex-grow-1">
+          <h5 class="mb-1">Include Dependencies</h5>
+          <p class="text-body-secondary mb-2">Add these CDN links inside your HTML. jQuery must load before Inputmask.</p>
+          <div class="code-wrapper">
+            <button class="btn btn-copy btn-sm btn-outline-light" data-clipboard-target="#code-step1">
+              <i class="bi bi-clipboard"></i> Copy
+            </button>
+            <pre><code class="language-html" id="code-step1">&lt;!-- CSS --&gt;
+&lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"&gt;
+
+&lt;!-- JS (place before &lt;/body&gt;) --&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.9/dist/inputmask.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.9/dist/jquery.inputmask.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"&gt;&lt;/script&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="d-flex gap-3 mb-4">
+        <span class="step-number bg-primary text-white mt-1">2</span>
+        <div class="flex-grow-1">
+          <h5 class="mb-1">Add an Input Element</h5>
+          <p class="text-body-secondary mb-2">Create a standard text input with an id or class you can target.</p>
+          <div class="code-wrapper">
+            <button class="btn btn-copy btn-sm btn-outline-light" data-clipboard-target="#code-step2">
+              <i class="bi bi-clipboard"></i> Copy
+            </button>
+            <pre><code class="language-html" id="code-step2">&lt;input type="text" id="price" class="form-control" placeholder="Enter amount"&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="d-flex gap-3 mb-4">
+        <span class="step-number bg-primary text-white mt-1">3</span>
+        <div class="flex-grow-1">
+          <h5 class="mb-1">Initialize the Mask</h5>
+          <p class="text-body-secondary mb-2">Call Inputmask with the <code>currency</code> alias and your preferred options.</p>
+          <div class="code-wrapper">
+            <button class="btn btn-copy btn-sm btn-outline-light" data-clipboard-target="#code-step3">
+              <i class="bi bi-clipboard"></i> Copy
+            </button>
+            <pre><code class="language-javascript" id="code-step3">$(document).ready(function () {
+  $("#price").inputmask("currency", {
+    prefix: "$ ",
+    groupSeparator: ",",
+    radixPoint: ".",
+    digits: 2,
+    digitsOptional: false,
+    rightAlign: false,
+    autoGroup: true,
+    removeMaskOnSubmit: true
+  });
+});</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert alert-info d-flex align-items-start gap-2 mt-3" role="alert">
+        <i class="bi bi-lightbulb fs-5 mt-1"></i>
+        <div>
+          <strong>Tip:</strong> Use <code>removeMaskOnSubmit: true</code> so the server receives a clean numeric value
+          instead of the formatted string. Alternatively, use <code>autoUnmask: true</code> to always keep the
+          underlying value clean.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="container">
+
+  <!-- ==================== LIVE DEMOS ==================== -->
+  <section id="demos" class="py-5">
+    <div class="container">
+      <h2 class="section-title text-center">Live Demos</h2>
+      <p class="text-body-secondary text-center section-subtitle">
+        Try each currency input below. The raw (unmasked) value updates in real time.
+      </p>
+
+      <div class="row g-4" id="demoGrid">
+        <!-- Cards are rendered by JS from the currencyConfigs array -->
+      </div>
+    </div>
+  </section>
+
+  <hr class="container">
+
+  <!-- ==================== CONFIGURATION REFERENCE ==================== -->
+  <section id="reference" class="py-5">
+    <div class="container" style="max-width: 920px;">
+      <h2 class="section-title text-center">Configuration Reference</h2>
+      <p class="text-body-secondary text-center section-subtitle">
+        Key options for the Inputmask <code>currency</code> / <code>numeric</code> alias.
+      </p>
+
+      <div class="table-responsive">
+        <table class="table table-striped table-hover table-ref align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th>Option</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>alias</code></td>
+              <td>string</td>
+              <td><code>"numeric"</code></td>
+              <td>Base alias to use. Set to <code>"currency"</code> for currency formatting.</td>
+            </tr>
+            <tr>
+              <td><code>prefix</code></td>
+              <td>string</td>
+              <td><code>""</code></td>
+              <td>String prepended to the value (e.g., <code>"$ "</code>, <code>"&euro; "</code>).</td>
+            </tr>
+            <tr>
+              <td><code>suffix</code></td>
+              <td>string</td>
+              <td><code>""</code></td>
+              <td>String appended to the value (e.g., <code>" USD"</code>, <code>" &#xFDFC;"</code>).</td>
+            </tr>
+            <tr>
+              <td><code>groupSeparator</code></td>
+              <td>string</td>
+              <td><code>""</code></td>
+              <td>Thousands separator (<code>","</code> for US/UK, <code>"."</code> for EU).</td>
+            </tr>
+            <tr>
+              <td><code>radixPoint</code></td>
+              <td>string</td>
+              <td><code>"."</code></td>
+              <td>Decimal point character (<code>"."</code> for US/UK, <code>","</code> for EU).</td>
+            </tr>
+            <tr>
+              <td><code>digits</code></td>
+              <td>number</td>
+              <td><code>2</code></td>
+              <td>Number of fractional digits. Set to <code>0</code> for currencies without decimals (e.g., JPY, IRR).</td>
+            </tr>
+            <tr>
+              <td><code>digitsOptional</code></td>
+              <td>boolean</td>
+              <td><code>true</code></td>
+              <td>When <code>false</code>, trailing zeros are always shown (e.g., <code>5.00</code>).</td>
+            </tr>
+            <tr>
+              <td><code>autoGroup</code></td>
+              <td>boolean</td>
+              <td><code>false</code></td>
+              <td>Automatically insert <code>groupSeparator</code> as the user types.</td>
+            </tr>
+            <tr>
+              <td><code>rightAlign</code></td>
+              <td>boolean</td>
+              <td><code>true</code></td>
+              <td>Align input text to the right (common in accounting UIs).</td>
+            </tr>
+            <tr>
+              <td><code>autoUnmask</code></td>
+              <td>boolean</td>
+              <td><code>false</code></td>
+              <td>When <code>true</code>, <code>.val()</code> returns the raw unmasked value.</td>
+            </tr>
+            <tr>
+              <td><code>removeMaskOnSubmit</code></td>
+              <td>boolean</td>
+              <td><code>false</code></td>
+              <td>Strip mask formatting when the form is submitted.</td>
+            </tr>
+            <tr>
+              <td><code>numericInput</code></td>
+              <td>boolean</td>
+              <td><code>false</code></td>
+              <td>Numeric mode &mdash; digits are entered from right to left.</td>
+            </tr>
+            <tr>
+              <td><code>allowMinus</code></td>
+              <td>boolean</td>
+              <td><code>true</code></td>
+              <td>Allow negative values.</td>
+            </tr>
+            <tr>
+              <td><code>min</code></td>
+              <td>number</td>
+              <td>&mdash;</td>
+              <td>Minimum allowed value.</td>
+            </tr>
+            <tr>
+              <td><code>max</code></td>
+              <td>number</td>
+              <td>&mdash;</td>
+              <td>Maximum allowed value.</td>
+            </tr>
+            <tr>
+              <td><code>placeholder</code></td>
+              <td>string</td>
+              <td><code>"0"</code></td>
+              <td>Placeholder character for empty positions.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="alert alert-secondary d-flex align-items-start gap-2 mt-3" role="alert">
+        <i class="bi bi-book fs-5 mt-1"></i>
+        <div>
+          For the full list of options, see the
+          <a href="https://robinherbots.github.io/Inputmask/" target="_blank" rel="noopener">official Inputmask documentation</a>.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="py-4 mt-3 border-top bg-body-tertiary">
+    <div class="container text-center">
+      <div class="d-flex flex-wrap justify-content-center gap-4 mb-3">
+        <a href="https://robinherbots.github.io/Inputmask/" target="_blank" rel="noopener" class="text-body-secondary">
+          <i class="bi bi-book me-1"></i> Inputmask Docs
+        </a>
+        <a href="https://github.com/RobinHerbots/Inputmask" target="_blank" rel="noopener" class="text-body-secondary">
+          <i class="bi bi-github me-1"></i> Inputmask on GitHub
+        </a>
+        <a href="https://getbootstrap.com/docs/5.3/" target="_blank" rel="noopener" class="text-body-secondary">
+          <i class="bi bi-bootstrap me-1"></i> Bootstrap 5 Docs
+        </a>
+        <a href="https://jquery.com/" target="_blank" rel="noopener" class="text-body-secondary">
+          <i class="bi bi-braces me-1"></i> jQuery
+        </a>
+      </div>
+      <p class="text-body-secondary mb-0 small">
+        Built for developers &mdash; Input Mask Currency Formatting Guide
+      </p>
+    </div>
+  </footer>
+
+  <!-- ==================== SCRIPTS ==================== -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.9/dist/inputmask.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.9/dist/jquery.inputmask.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <script>
+    $(function () {
+
+      /* ============================================================
+         CURRENCY CONFIGURATIONS
+         ============================================================ */
+      const currencyConfigs = [
+        {
+          id: "usd",
+          name: "US Dollar",
+          code: "USD",
+          symbol: "$",
+          symbolBg: "bg-success-subtle text-success",
+          placeholder: "0.00",
+          mask: {
+            alias: "currency",
+            prefix: "$ ",
+            groupSeparator: ",",
+            radixPoint: ".",
+            digits: 2,
+            digitsOptional: false,
+            rightAlign: false,
+            autoGroup: true,
+            removeMaskOnSubmit: true
+          }
+        },
+        {
+          id: "eur",
+          name: "Euro",
+          code: "EUR",
+          symbol: "\u20AC",
+          symbolBg: "bg-primary-subtle text-primary",
+          placeholder: "0,00",
+          mask: {
+            alias: "currency",
+            prefix: "\u20AC ",
+            groupSeparator: ".",
+            radixPoint: ",",
+            digits: 2,
+            digitsOptional: false,
+            rightAlign: false,
+            autoGroup: true,
+            removeMaskOnSubmit: true
+          }
+        },
+        {
+          id: "irr",
+          name: "Iranian Rial",
+          code: "IRR",
+          symbol: "\uFDFC",
+          symbolBg: "bg-danger-subtle text-danger",
+          placeholder: "0",
+          mask: {
+            alias: "currency",
+            prefix: "",
+            suffix: " \uFDFC",
+            groupSeparator: ",",
+            radixPoint: "",
+            digits: 0,
+            digitsOptional: false,
+            rightAlign: false,
+            autoGroup: true,
+            removeMaskOnSubmit: true
+          }
+        },
+        {
+          id: "try",
+          name: "Turkish Lira",
+          code: "TRY",
+          symbol: "\u20BA",
+          symbolBg: "bg-danger-subtle text-danger",
+          placeholder: "0,00",
+          mask: {
+            alias: "currency",
+            prefix: "\u20BA ",
+            groupSeparator: ".",
+            radixPoint: ",",
+            digits: 2,
+            digitsOptional: false,
+            rightAlign: false,
+            autoGroup: true,
+            removeMaskOnSubmit: true
+          }
+        },
+        {
+          id: "gbp",
+          name: "British Pound",
+          code: "GBP",
+          symbol: "\u00A3",
+          symbolBg: "bg-info-subtle text-info",
+          placeholder: "0.00",
+          mask: {
+            alias: "currency",
+            prefix: "\u00A3 ",
+            groupSeparator: ",",
+            radixPoint: ".",
+            digits: 2,
+            digitsOptional: false,
+            rightAlign: false,
+            autoGroup: true,
+            removeMaskOnSubmit: true
+          }
+        },
+        {
+          id: "jpy",
+          name: "Japanese Yen",
+          code: "JPY",
+          symbol: "\u00A5",
+          symbolBg: "bg-warning-subtle text-warning",
+          placeholder: "0",
+          mask: {
+            alias: "currency",
+            prefix: "\u00A5 ",
+            groupSeparator: ",",
+            radixPoint: "",
+            digits: 0,
+            digitsOptional: false,
+            rightAlign: false,
+            autoGroup: true,
+            removeMaskOnSubmit: true
+          }
+        },
+        {
+          id: "aed",
+          name: "UAE Dirham",
+          code: "AED",
+          symbol: "AED",
+          symbolBg: "bg-secondary-subtle text-secondary",
+          placeholder: "0.00",
+          mask: {
+            alias: "currency",
+            prefix: "AED ",
+            groupSeparator: ",",
+            radixPoint: ".",
+            digits: 2,
+            digitsOptional: false,
+            rightAlign: false,
+            autoGroup: true,
+            removeMaskOnSubmit: true
+          }
+        }
+      ];
+
+      /* ============================================================
+         RENDER DEMO CARDS
+         ============================================================ */
+      const $grid = $("#demoGrid");
+
+      currencyConfigs.forEach(function (cfg) {
+        const maskJson = JSON.stringify(cfg.mask, null, 2);
+        const jsSnippet =
+          '$("#' + cfg.id + '").inputmask(' + maskJson + ");";
+
+        const card = `
+          <div class="col-sm-6 col-lg-4">
+            <div class="card currency-card h-100 shadow-sm border-0">
+              <div class="card-body">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                  <span class="currency-symbol ${cfg.symbolBg}">${cfg.symbol}</span>
+                  <div>
+                    <h6 class="mb-0">${cfg.name}</h6>
+                    <small class="text-body-secondary">${cfg.code}</small>
+                  </div>
+                </div>
+                <label class="form-label small text-body-secondary" for="input-${cfg.id}">Enter amount</label>
+                <input
+                  type="text"
+                  id="input-${cfg.id}"
+                  class="form-control form-control-lg mb-2 currency-input"
+                  placeholder="${cfg.placeholder}"
+                  autocomplete="off"
+                  data-currency-id="${cfg.id}"
+                >
+                <div class="d-flex align-items-center justify-content-between">
+                  <span class="raw-value text-body-secondary">
+                    Raw: <code id="raw-${cfg.id}">—</code>
+                  </span>
+                  <button
+                    class="btn btn-sm btn-outline-secondary"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#config-${cfg.id}"
+                    aria-expanded="false"
+                  >
+                    <i class="bi bi-code-slash me-1"></i>Config
+                  </button>
+                </div>
+              </div>
+              <div class="collapse" id="config-${cfg.id}">
+                <div class="card-footer config-code p-0">
+                  <div class="code-wrapper">
+                    <button class="btn btn-copy btn-sm btn-outline-light" data-clipboard-text='${jsSnippet.replace(/'/g, "&#39;")}'>
+                      <i class="bi bi-clipboard"></i> Copy
+                    </button>
+                    <pre class="mb-0"><code class="language-javascript">${escapeHtml(jsSnippet)}</code></pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>`;
+
+        $grid.append(card);
+      });
+
+      /* ============================================================
+         INITIALIZE INPUT MASKS
+         ============================================================ */
+      currencyConfigs.forEach(function (cfg) {
+        const $input = $("#input-" + cfg.id);
+        $input.inputmask(cfg.mask);
+
+        $input.on("input keyup", function () {
+          const raw = $(this).inputmask("unmaskedvalue");
+          $("#raw-" + cfg.id).text(raw || "\u2014");
+        });
+      });
+
+      /* ============================================================
+         SYNTAX HIGHLIGHTING
+         ============================================================ */
+      hljs.highlightAll();
+
+      /* ============================================================
+         DARK / LIGHT THEME TOGGLE
+         ============================================================ */
+      const $html = $("html");
+      const $icon = $("#themeIcon");
+      const $hljsDark = $("#hljs-theme-dark");
+      const $hljsLight = $("#hljs-theme-light");
+
+      function applyTheme(theme) {
+        $html.attr("data-bs-theme", theme);
+        if (theme === "dark") {
+          $icon.removeClass("bi-moon-stars-fill").addClass("bi-sun-fill");
+          $hljsDark.prop("disabled", false);
+          $hljsLight.prop("disabled", true);
+        } else {
+          $icon.removeClass("bi-sun-fill").addClass("bi-moon-stars-fill");
+          $hljsDark.prop("disabled", true);
+          $hljsLight.prop("disabled", false);
+        }
+        localStorage.setItem("theme", theme);
+      }
+
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme) {
+        applyTheme(savedTheme);
+      } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        applyTheme("dark");
+      } else {
+        applyTheme("light");
+      }
+
+      $("#themeToggle").on("click", function () {
+        const current = $html.attr("data-bs-theme");
+        applyTheme(current === "dark" ? "light" : "dark");
+      });
+
+      /* ============================================================
+         COPY TO CLIPBOARD
+         ============================================================ */
+      $(document).on("click", ".btn-copy", function () {
+        const $btn = $(this);
+        let text = $btn.attr("data-clipboard-text");
+
+        if (!text) {
+          const targetSel = $btn.attr("data-clipboard-target");
+          if (targetSel) {
+            text = $(targetSel).text();
+          }
+        }
+
+        if (text) {
+          navigator.clipboard.writeText(text).then(function () {
+            const original = $btn.html();
+            $btn.html('<i class="bi bi-check-lg"></i> Copied!');
+            setTimeout(function () { $btn.html(original); }, 1500);
+          });
+        }
+      });
+
+      /* ============================================================
+         HELPER: escape HTML for rendering in code blocks
+         ============================================================ */
+      function escapeHtml(str) {
+        return str
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+    });
+  </script>
+
+</body>
+</html>
